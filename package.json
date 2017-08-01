@@ -1,0 +1,31 @@
+{
+  "name": "vue-url-parameters",
+  "version": "1.0.0",
+  "description": "A vue mixin that simplifies working with url parameters. The package is developed for the purpose of allowing the key and values of a vue filter to be defined with url parameters.",
+  "main": "dist/index.js",
+  "jsnext:main": "src/index.js",
+  "scripts": {
+    "build": "babel src -d dist",
+    "prepublish": "npm run build"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/Sempro/vue-url-parameters.git"
+  },
+  "keywords": [
+    "Sempro AS",
+    "url parameters"
+  ],
+  "author": "Sempro AS",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/Sempro/vue-url-parameters/issues"
+  },
+  "homepage": "https://github.com/Sempro/vue-url-parameters",
+  "devDependencies": {
+    "babel-cli": "^6.9.0",
+    "babel-loader": "^6.2.5",
+    "babel-preset-env": "^1.4.0",
+    "babel-preset-es2015": "^6.9.0"
+  }
+}
