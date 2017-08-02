@@ -15,7 +15,7 @@ export default {
 
         params.forEach(param => {
           const paramBits = param.split('=');
-          const paramKey = paramBits[0];
+          let paramKey = paramBits[0];
 
           // Invalid parameters, ignore!
           if (paramBits.length === 1) {
@@ -25,33 +25,38 @@ export default {
           const paramValues = paramBits[1].split(',');
 
           paramValues.forEach(paramValue => {
-            const obj = {};
+            let obj = {};
             const values = paramValue.split('-');
 
             if (values.length === 3) {
               // This is a date (2017-3-25) as we have 2 dashes which gives 3 values
-              obj.value = decodeURI(paramValue);
+              obj = decodeURI(paramValue);
             } else if (values.length === 2) {
               // If length of values is greater than 1 we assume it's a range with integer values
               obj.min = parseInt(values[0]);
               obj.max = parseInt(values[1]);
             } else if (isNaN(parseInt(values[0]))) {
               // If the value is NaN (Not a Number), it must be a string
-              obj.value = decodeURI(values[0]);
+              obj = decodeURI(values[0]);
             } else {
               // It is a number
-              obj.value = parseInt(values[0]);
+              obj = parseFloat(values[0]);
             }
 
             // If string, set the value directly
-            if (typeof obj.value === 'string') {
+            if (typeof obj === 'string') {
               // Convert to boolean if we can
-              if (obj.value === 'true' || obj.value === 'false') {
-                data[paramKey] = JSON.parse(obj.value);
+              if (obj === 'true' || obj === 'false') {
+                data[paramKey] = JSON.parse(obj);
               } else {
-                data[paramKey] = obj.value;
+                data[paramKey] = obj;
               }
             } else {
+              // Remove brackets from key name
+              if (paramKey.indexOf('[]') !== -1) {
+                paramKey = paramKey.substring(0, paramKey.length - 2);
+              }
+
               if (!Array.isArray(data[paramKey])) {
                 data[paramKey] = [];
               }
@@ -78,23 +83,27 @@ export default {
       for (let key in data) {
         let value = data[key];
 
-        if ((value !== null && !Array.isArray(value)) || (Array.isArray(value) && value.length > 0)) {
+        if ((value !== null && value !== '' && !Array.isArray(value)) || (Array.isArray(value) && value.length > 0)) {
           if (urlHash.length > 1) {
             urlHash += '&';
           }
 
-          urlHash += key + '=';
-
           if (Array.isArray(value)) {
-            value.forEach(object => {
-              for (let property in object) {
-                const propertyValue = object[property];
+            urlHash += key + '[]=';
 
-                urlHash += propertyValue;
+            value.forEach(objectOrElement => {
+              if (typeof objectOrElement === 'object') {
+                for (let property in objectOrElement) {
+                  const propertyValue = objectOrElement[property];
 
-                if (property === 'min') {
-                  urlHash += '-';
+                  urlHash += propertyValue;
+
+                  if (property === 'min') {
+                    urlHash += '-';
+                  }
                 }
+              } else {
+                urlHash += objectOrElement;
               }
 
               urlHash += ',';
@@ -102,6 +111,8 @@ export default {
 
             urlHash = urlHash.substring(0, urlHash.length - 1);
           } else {
+            urlHash += key + '=';
+
             if (typeof value === 'string') {
               value = encodeURI(value);
             }
