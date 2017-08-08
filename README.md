@@ -50,6 +50,16 @@ data() {
 }
 ```
 
+### Casting of attributes
+
+When you fetch attributes from the url, you can pass in a second parameter to the `getFiltersFromUrl()` function in order to case the attributes automatically:
+
+```js
+this.getFiltersFromUrl(this.searchParams, true)
+```
+
+Strings that can be cast to a numeric value will be cast to a float. Strings that equals either *true* or *false* will be cast to a boolean.
+
 ## Change log
 
 Please see [CHANGELOG](CHANGELOG.md) for more information what has changed recently.

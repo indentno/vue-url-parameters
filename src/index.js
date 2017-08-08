@@ -3,71 +3,105 @@ export default {
     /**
      * Retrieves parameters from url and sets correct filters
      */
-    getFiltersFromUrl: function (data) {
+    getFiltersFromUrl: function (data, convertTypes = false) {
       let url = window.location.hash;
 
-      if (url.length > 1) {
-        if (url[0] === '#') {
-          url = url.substring(1);
-        }
-
-        const params = url.split('&');
-
-        params.forEach(param => {
-          const paramBits = param.split('=');
-          let paramKey = paramBits[0];
-
-          // Invalid parameters, ignore!
-          if (paramBits.length === 1) {
-            return;
-          }
-
-          const paramValues = paramBits[1].split(',');
-
-          paramValues.forEach(paramValue => {
-            let obj = {};
-            const values = paramValue.split('-');
-
-            if (values.length === 3) {
-              // This is a date (2017-3-25) as we have 2 dashes which gives 3 values
-              obj = decodeURI(paramValue);
-            } else if (values.length === 2) {
-              // If length of values is greater than 1 we assume it's a range with integer values
-              obj.min = parseInt(values[0]);
-              obj.max = parseInt(values[1]);
-            } else if (isNaN(parseInt(values[0]))) {
-              // If the value is NaN (Not a Number), it must be a string
-              obj = decodeURI(values[0]);
-            } else {
-              // It is a number
-              obj = parseFloat(values[0]);
-            }
-
-            // If string, set the value directly
-            if (typeof obj === 'string') {
-              // Convert to boolean if we can
-              if (obj === 'true' || obj === 'false') {
-                data[paramKey] = JSON.parse(obj);
-              } else {
-                data[paramKey] = obj;
-              }
-            } else {
-              // Remove brackets from key name
-              if (paramKey.indexOf('[]') !== -1) {
-                paramKey = paramKey.substring(0, paramKey.length - 2);
-              }
-
-              if (!Array.isArray(data[paramKey])) {
-                data[paramKey] = [];
-              }
-
-              data[paramKey].push(obj);
-            }
-          });
-        });
+      // Return data if url length is not more then 1
+      if (url.length <= 1) {
+        return data;
       }
 
+      // Remove # as we do not need it in the string
+      if (url[0] === '#') {
+        url = url.substring(1);
+      }
+
+      const params = url.split('&');
+
+      // Loop through each parameter
+      params.forEach(param => {
+        const paramBits = param.split('=');
+        let paramKey = paramBits[0];
+        let paramValue = [];
+        let shouldBeArray = false;
+
+        // The string has no '=', making it invalid
+        if (paramBits.length === 1) {
+          return;
+        }
+
+        // Check if key contains bracket, which means that the value should be an array
+        // If the key contains braket, we remove the brackets from the name
+        if (paramKey.indexOf('[]') !== -1) {
+          paramKey = paramKey.substring(0, paramKey.length - 2);
+          shouldBeArray = true;
+        }
+
+        if (shouldBeArray) {
+          // Each value in the array should be separated by comma
+          const arrayValues = paramBits[1].split(',');
+
+          arrayValues.forEach(value => {
+            if (convertTypes) {
+              value = this.convertStringValueToCorrectType(value);
+            }
+
+            paramValue.push(value);
+          });
+        } else {
+          if (convertTypes) {
+            paramValue = this.convertStringValueToCorrectType(paramBits[1]);
+          } else {
+            paramValue = paramBits[1];
+          }
+        }
+
+        data[paramKey] = paramValue;
+      });
+
       return data;
+    },
+
+    convertStringValueToCorrectType(value) {
+      let returnValue = null;
+
+      /**
+       * Some values contains hyphens (a date or a range)
+       * If a string contains 2 hyphens, it will be treated like a date (2017-08-01). If the string contains
+       * only 1 hyphen, it will be treated like a range (50-250). This means that a regular string might not
+       * returned the way you expect.
+       */
+      const values = value.split('-');
+
+      if (values.length === 3) {
+        // This is a date (2017-3-25) as we have 2 dashes which gives 3 values
+        returnValue = decodeURI(paramValue);
+      } else if (values.length === 2) {
+        // If length of values is greater than 1 we assume it's a range with integer values
+        returnValue = {}
+        returnValue.min = parseFloat(values[0]);
+        returnValue.max = parseFloat(values[1]);
+      } else if (values.length === 1) {
+        if (isNaN(values[0])) {
+          // If the value is NaN (Not a Number), it must be a string
+          let stringValue = decodeURI(values[0]);
+
+          // Convert to boolean if string is 'true' or 'false'
+          if (stringValue === 'true' || stringValue === 'false') {
+            returnValue = JSON.parse(stringValue);
+          } else {
+            returnValue = stringValue;
+          }
+        } else {
+          // It is a number
+          returnValue = parseFloat(values[0]);
+        }
+      } else {
+        // More then 3 hyphens, this must be a regular string
+        returnValue = value;
+      }
+
+      return returnValue;
     },
 
     /**
