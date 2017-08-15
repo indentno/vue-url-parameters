@@ -64,6 +64,12 @@ Strings that can be cast to a numeric value will be cast to a float. Strings tha
 
 Please see [CHANGELOG](CHANGELOG.md) for more information what has changed recently.
 
+## Testing
+
+``` bash
+$ npm run test
+```
+
 ## Contributing
 
 Please see [CONTRIBUTING](CONTRIBUTING.md) for details.

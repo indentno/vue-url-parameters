@@ -1,10 +1,12 @@
-export default {
+'use strict';
+
+module.exports = {
   methods: {
     /**
      * Retrieves parameters from url and sets correct filters
      */
-    getFiltersFromUrl: function (data, convertTypes = false) {
-      let url = window.location.hash;
+    getFiltersFromUrl: function (data, convertTypes = false, urlString = null) {
+      let url = urlString || window.location.hash;
 
       // Return data if url length is not more then 1
       if (url.length <= 1) {
