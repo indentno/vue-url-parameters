@@ -1,6 +1,6 @@
 {
   "name": "vue-url-parameters",
-  "version": "1.0.5",
+  "version": "1.0.6",
   "description": "A vue mixin that simplifies working with url parameters. The package is developed for the purpose of allowing the key and values of a vue filter to be defined with url parameters.",
   "main": "dist/index.js",
   "jsnext:main": "src/index.js",
