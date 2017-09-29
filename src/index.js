@@ -5,16 +5,7 @@ module.exports = {
     /**
      * Retrieves parameters from url and sets correct filters
      */
-    getFiltersFromUrl: function (data, convertTypes, urlString) {
-      // Set default values for parameters if not defined
-      if (typeof convertTypes === 'undefined') {
-        convertTypes = false;
-      }
-
-      if (typeof urlString === 'undefined') {
-        urlString = null;
-      }
-
+    getFiltersFromUrl: function (data, convertTypes = false, urlString = null) {
       let url = urlString || window.location.hash;
 
       // Return data if url length is not more then 1
