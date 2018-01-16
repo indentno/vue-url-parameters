@@ -81,6 +81,7 @@ If you discover any security related issues, please contact [admin@sempro.no](ma
 ## Credits
 
 - [Runar Jørgensen](https://github.com/ventrec)
+- [Christoffer Martinsen](https://github.com/mrtnsn)
 - [All Contributors](../../contributors)
 
 ## License
