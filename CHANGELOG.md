@@ -2,6 +2,9 @@
 
 All Notable changes to `vue-url-parameters` will be documented in this file
 
+## 1.0.7
+- getFiltersFromUrl() will now always use decodeURI() on the result
+
 ## 1.0.4
 - Adds tests to verify functionality. Tests can be run with the following command: `npm run test`
 

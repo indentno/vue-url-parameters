@@ -54,7 +54,7 @@ module.exports = {
           if (convertTypes) {
             paramValue = this.convertStringValueToCorrectType(paramBits[1]);
           } else {
-            paramValue = paramBits[1];
+            paramValue = decodeURI(paramBits[1]);
           }
         }
 
